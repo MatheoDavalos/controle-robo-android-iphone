@@ -7,7 +7,7 @@ Este repositório contém somente a versão final aprovada no projeto.
 
 ## Instalar o aplicativo
 
-Baixe [Controle_Robo.apk](apk/Controle_Robo.apk?raw=true) no celular Android.
+Baixe [Controle_Robo.apk](https://github.com/MatheoDavalos/controle-robo/releases/latest/download/Controle_Robo.apk) no celular Android.
 O APK requer **Android 8.0 ou superior** e Bluetooth. Não é compatível com iPhone.
 
 1. Abra o APK baixado e autorize a instalação por essa fonte, se o Android solicitar.
@@ -21,6 +21,12 @@ O arquivo distribuído é o APK debug usado na validação, assinado com a chave
 desenvolvimento original. A chave não está neste repositório. Uma compilação em
 outra máquina pode ter assinatura diferente e exigir desinstalar a anterior.
 O checksum está em [apk/SHA256SUMS](apk/SHA256SUMS).
+
+## QR code para a feira
+
+O [cartaz pronto para imprimir](feira/cartaz-feira.png) inclui um QR code que abre
+a [página de download](https://github.com/MatheoDavalos/controle-robo/releases/latest).
+Veja [as instruções e os arquivos do QR](feira/INSTALAR.md).
 
 ## Estrutura
 
