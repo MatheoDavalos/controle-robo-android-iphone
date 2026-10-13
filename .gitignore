@@ -1,0 +1,12 @@
+# Arquivos locais e resultados de compilação
+.gradle/
+.idea/
+**/build/
+**/local.properties
+*.iml
+*.jks
+*.keystore
+__pycache__/
+*.pyc
+core
+.DS_Store

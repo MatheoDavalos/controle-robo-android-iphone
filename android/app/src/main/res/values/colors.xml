@@ -1,0 +1,20 @@
+<resources>
+    <color name="robot_background">#030712</color>
+    <color name="robot_surface">#081C38</color>
+    <color name="robot_text">#E5E7EB</color>
+    <color name="robot_muted">#94A3B8</color>
+    <color name="robot_blue">#1D6FD4</color>
+    <color name="robot_blue_start">#1D4ED8</color>
+    <color name="robot_outline">#3B82F6</color>
+    <color name="robot_icon">#68A2FF</color>
+    <color name="robot_ring">#767676</color>
+    <color name="robot_secondary">#363C49</color>
+    <color name="robot_disabled_text">#9DA3AD</color>
+    <color name="robot_green_start">#67CF6C</color>
+    <color name="robot_green_end">#50A75B</color>
+    <color name="robot_connected">#20D34A</color>
+    <color name="robot_red_start">#991B1B</color>
+    <color name="robot_red_end">#7F1D1D</color>
+    <color name="robot_disconnected">#FF4141</color>
+    <color name="robot_ripple">#3368A2FF</color>
+</resources>

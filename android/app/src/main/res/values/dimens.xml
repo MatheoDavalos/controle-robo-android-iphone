@@ -1,0 +1,6 @@
+<resources>
+    <dimen name="robot_corner">4dp</dimen>
+    <dimen name="robot_button_height">48dp</dimen>
+    <dimen name="robot_joystick_border">4dp</dimen>
+    <dimen name="robot_axis_width">2dp</dimen>
+</resources>
