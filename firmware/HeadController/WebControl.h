@@ -7,7 +7,7 @@ static const char CONTROL_PAGE[] PROGMEM = R"HTML(
 <!doctype html><html lang="pt-BR"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Controle Hibrido</title><style>
+<title>Controle do Robô</title><style>
 :root{color-scheme:dark;--bg:#070b12;--panel:#101827;--line:#29364b;--blue:#35a7ff;--red:#ff4d61;--muted:#91a0b7}*{box-sizing:border-box;touch-action:none;-webkit-user-select:none;user-select:none}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:radial-gradient(circle at 50% -20%,#19304d,var(--bg) 55%);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#fff}
 body{padding:max(10px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));display:grid;grid-template-rows:auto 1fr;gap:10px}
@@ -17,7 +17,7 @@ main{min-height:0;display:grid;grid-template-columns:1fr auto 1fr;align-items:ce
 .knob{position:absolute;width:36%;height:36%;left:32%;top:32%;border-radius:50%;background:linear-gradient(145deg,#52baff,#1679c8);border:3px solid #79caff;box-shadow:0 8px 22px #000b,0 0 22px #269cff55;transform:translate(0,0)}
 .stop{width:92px;height:92px;border-radius:50%;border:4px solid #ff8290;background:linear-gradient(#fa4055,#b80e25);color:#fff;font-size:14px;font-weight:900;letter-spacing:.08em;box-shadow:0 10px 26px #000b,0 0 22px #ff314955}.stop:active{transform:scale(.94)}
 @media(max-width:680px) and (orientation:portrait){main{grid-template-columns:1fr 1fr;grid-template-rows:1fr auto}.stop{grid-column:1/-1;grid-row:2;width:76px;height:76px}.pad{width:min(42vw,31vh);height:min(42vw,31vh);min-width:130px;min-height:130px}}
-</style></head><body><header><div class="brand">CONTROLE HIBRIDO</div><div class="status"><span id="dot" class="dot"></span><span id="status">Pronto</span></div></header>
+</style></head><body><header><div class="brand">CONTROLE DO ROBÔ</div><div class="status"><span id="dot" class="dot"></span><span id="status">Pronto</span></div></header>
 <main><section class="control"><div class="label">MOVIMENTO</div><div id="move" class="pad"><div class="knob"></div></div></section><button id="stop" class="stop">PARAR</button><section class="control"><div class="label">DIRECAO</div><div id="steer" class="pad"><div class="knob"></div></div></section></main>
 <script>
 (()=>{'use strict';let movement=0,steering=0,armed=false,busy=false,lastByte=-1;

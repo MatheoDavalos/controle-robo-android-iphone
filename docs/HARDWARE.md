@@ -3,7 +3,7 @@
 Placa: ESP32-WROOM-32 / DOIT ESP32 DEVKIT V1, Bluetooth clássico SPP e
 Wi-Fi em modo ponto de acesso simultaneamente.
 
-## Controle híbrido
+## Controle do robô
 
 O aplicativo Android continua conectando ao dispositivo Bluetooth `RobotUA`.
 Para usar o controle web no iPhone ou computador:

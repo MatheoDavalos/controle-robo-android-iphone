@@ -1,4 +1,4 @@
-# Compilar o Controle Híbrido
+# Compilar o Controle do Robô
 
 ## ESP32-WROOM-32 / DOIT DEVKIT V1 (4 MB)
 
@@ -10,7 +10,7 @@
 6. Escolha a porta correta, verifique e carregue por USB.
 7. Abra o Monitor Serial em **115200 baud**. Deve aparecer `Controle web: http://192.168.4.1`.
 
-O perfil DOIT padrão reserva apenas 1.310.720 bytes para o programa; o firmware híbrido compilado pelo usuário ocupou 1.674.851 bytes. Huge APP reserva 3.145.728 bytes. Essa configuração não oferece atualização OTA. Não há binário ESP32 pré-compilado nesta entrega.
+O perfil DOIT padrão reserva apenas 1.310.720 bytes para o programa; o firmware com Bluetooth e Wi-Fi compilado pelo usuário ocupou 1.674.851 bytes. Huge APP reserva 3.145.728 bytes. Essa configuração não oferece atualização OTA. Não há binário ESP32 pré-compilado nesta entrega.
 
 ## Android
 
