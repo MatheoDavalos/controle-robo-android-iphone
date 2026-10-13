@@ -1,53 +1,50 @@
-# Controle do Robô — Android e iPhone
+# Controle do Robô
 
-Controle do robô ESP32 por **Bluetooth no Android** ou **Wi-Fi no navegador do iPhone**.
+Projeto de controle de um robô com duas rodas e expressões em matrizes de LEDs, baseado no ESP32-WROOM-32. Integra aplicativo móvel, interface web hospedada no próprio ESP32 e firmware para os motores e a face.
 
-## Android: baixar o aplicativo
+## Funcionalidades
 
-[**Baixar Controle_Robo.apk**](https://github.com/MatheoDavalos/controle-robo-android-iphone/raw/refs/heads/main/apk/Controle_Robo.apk)
+- Comunicação por Bluetooth Classic/SPP e Wi-Fi local.
+- Controle de movimento e direção com dois joysticks.
+- Protocolo de comandos de um byte, compartilhado pelos canais de comunicação.
+- Aceleração e frenagem graduais dos servos.
+- Expressões da face associadas ao movimento.
+- Arbitragem entre canais e parada por ausência de comandos.
 
-Requer Android 8.0 ou superior. Baixe usando internet, abra o APK e permita a instalação pela fonte escolhida se solicitado. Pareie **RobotUA** nas configurações Bluetooth, abra **Controle_Robo** e conecte. O aplicativo é o mesmo da versão normal, com a assinatura original preservada; o modo Wi-Fi está no firmware do robô.
+## Estrutura
 
-![Baixar APK Android](feira/qr-android.png)
+- `android/`: código-fonte do aplicativo móvel.
+- `apk/`: aplicativo compilado e checksum SHA-256.
+- `firmware/HeadController/`: firmware dos motores, face e interface web.
+- `firmware/libraries/`: biblioteca de controle das matrizes de LEDs.
+- `firmware/tests/`: testes de lógica e simulação das tarefas do firmware.
+- `docs/`: documentação de compilação, hardware e validação.
+- `feira/`: materiais de divulgação e instruções de uso.
 
-## iPhone: controlar pelo Wi-Fi
+## Hardware e compilação
 
-Não precisa instalar aplicativo. O robô precisa estar ligado e com o firmware com Bluetooth e Wi-Fi carregado.
+O projeto utiliza ESP32-WROOM-32 de 4 MB, dois servos de rotação contínua e quatro matrizes de LEDs 8×8 com MAX7219.
 
-1. Leia o QR de Wi-Fi abaixo ou entre em **Ajustes > Wi-Fi > RobotUA-Controle**. Senha: **controle123**.
-2. Permaneça conectado mesmo que o iPhone indique que a rede não tem internet.
-3. Abra **http://192.168.4.1** no Safari, ou leia o QR de controle.
-4. Opcional: **Compartilhar > Adicionar à Tela de Início**.
+Abra `firmware/HeadController/HeadController.ino` no Arduino IDE, mantendo todos os arquivos dessa pasta juntos. Selecione **ESP32 Dev Module**, **Flash Size: 4MB**, **Partition Scheme: Huge APP (3MB No OTA/1MB SPIFFS)** e **Flash Mode: DIO**. A partição padrão do perfil DOIT não comporta o firmware com Bluetooth e Wi-Fi.
 
-| 1 — Entrar no Wi-Fi | 2 — Abrir o controle |
-|---|---|
-| ![Conectar ao Wi-Fi](feira/qr-wifi.png) | ![Abrir controle](feira/qr-controle-wifi.png) |
+Consulte [compilação](docs/COMPILAR.md) e [hardware e protocolo](docs/HARDWARE.md) para dependências, conexões e detalhes técnicos.
 
-O endereço do controle só funciona conectado ao Wi-Fi do robô. A página está no ESP32 e não depende do GitHub ou da internet. Android também pode usar esse modo pelo navegador.
+## Comunicação
 
-## Na feira
+O protocolo codifica o sentido e a velocidade de cada roda em um byte. Bluetooth e interface web encaminham os comandos ao mesmo controlador de movimento. A interface web usa HTTP e é servida pelo ESP32, sem dependência de internet.
 
-[Cartaz para impressão A4](feira/cartaz-feira.png) · [Instruções](feira/INSTALAR.md)
+A arbitragem distingue os canais Bluetooth, web e serial, mas não diferencia navegadores individuais. A concessão de controle expira após 600 ms sem comandos do canal ativo; o timeout dos motores é de 800 ms. A operação deve ser feita por um controlador de cada vez.
 
-Combine a vez com o responsável: um celular opera por vez. Solte os controles e desconecte ao terminar. O APK e o navegador usam o mesmo protocolo de movimento.
+## Testes e validação
 
-## Código e montagem
+Execute os testes locais do firmware:
 
-- `android/`: código do aplicativo Android.
-- `apk/`: aplicativo e checksum SHA-256.
-- `firmware/HeadController/`: sketch com Bluetooth e Wi-Fi completo, incluindo a página web.
-- `firmware/libraries/`: biblioteca de LEDs do projeto original.
-- `feira/`: cartaz e QR Codes em PNG/SVG.
-- `docs/`: compilação, hardware e validação.
+```bash
+bash firmware/tests/run.sh
+```
 
-Abra **firmware/HeadController/HeadController.ino** no Arduino IDE mantendo todos os arquivos dessa pasta juntos. Para ESP32-WROOM-32 de 4 MB, selecione **ESP32 Dev Module**, **Flash Size: 4MB**, **Partition Scheme: Huge APP (3MB No OTA/1MB SPIFFS)** e **Flash Mode: DIO**. A configuração DOIT padrão de 1,31 MB não comporta o firmware com Bluetooth e Wi-Fi. Consulte [compilação](docs/COMPILAR.md).
-
-## Estado da versão híbrida
-
-Os testes de lógica passaram, mas a validação física conjunta de Bluetooth/Wi-Fi ainda está pendente. O usuário confirmou que os dois olhos funcionam após desligar e ligar o robô; a causa da falha inicial não foi confirmada. O histórico de validação herdado da versão normal não certifica o firmware com Bluetooth e Wi-Fi.
-
-A arbitragem atual separa Bluetooth, web e serial, mas não distingue dois navegadores. O timeout físico é de 800 ms; a concessão de controle expira em 600 ms. O transporte web implementado usa HTTP, não WebSocket. Use apenas um operador por vez.
+Os testes cobrem movimento, rampa, timeout, expressões da face, recepção e arbitragem. A validação física conjunta de Bluetooth e Wi-Fi permanece pendente. Consulte [validação](docs/VALIDACAO.md) para o histórico e os limites dos testes.
 
 ## Créditos
 
-Derivado do [controle normal](https://github.com/MatheoDavalos/controle-robo). Autoria de Luciano Neris e créditos do projeto preservados nos fontes. Veja [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Derivado do [controle original](https://github.com/MatheoDavalos/controle-robo). Autoria de Luciano Neris e créditos do projeto preservados nos fontes. Veja [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
