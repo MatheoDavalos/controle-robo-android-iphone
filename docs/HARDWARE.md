@@ -1,6 +1,28 @@
 # Hardware e protocolo
 
-Placa: ESP32-WROOM-32 / DOIT ESP32 DEVKIT V1, Bluetooth clássico SPP.
+Placa: ESP32-WROOM-32 / DOIT ESP32 DEVKIT V1, Bluetooth clássico SPP e
+Wi-Fi em modo ponto de acesso simultaneamente.
+
+## Controle híbrido
+
+O aplicativo Android continua conectando ao dispositivo Bluetooth `RobotUA`.
+Para usar o controle web no iPhone ou computador:
+
+1. Conecte-se à rede Wi-Fi `RobotUA-Controle`.
+2. Use a senha `controle123`.
+3. Abra `http://192.168.4.1` no navegador.
+4. No iPhone, opcionalmente use **Compartilhar > Adicionar à Tela de Início**.
+
+A página fica armazenada no próprio ESP32 e não precisa de internet. O primeiro
+canal que enviar movimento recebe o controle por 600 ms. A concessão é renovada
+por cada comando, liberada ao enviar parada e expira se o controlador ficar
+silencioso. Bytes de parada enviados por um canal ocioso não bloqueiam o outro
+canal. O timeout físico já existente continua levando os servos ao neutro após
+800 ms sem um comando aceito.
+
+O firmware usa somente bibliotecas fornecidas pelo pacote Arduino ESP32:
+`BluetoothSerial`, `WiFi` e `WebServer`. Não é necessário instalar uma biblioteca
+de WebSocket.
 
 | Função | GPIO |
 |---|---:|
@@ -33,4 +55,5 @@ RD=1500 us. A falta de comandos válidos por 800 ms leva ao neutro.
 
 Expressões: parado neutro; frente sorriso; ré olha para cima com boca O; curvas
 à frente usam as duas caras personalizadas. Nas curvas em ré, a expressão de ré
-prevalece. Um único celular deve operar o robô por vez na demonstração.
+prevalece. Android e navegador podem permanecer conectados ao mesmo tempo, mas a
+arbitragem aceita movimento de apenas um controlador por vez.

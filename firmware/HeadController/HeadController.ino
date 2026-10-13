@@ -39,8 +39,12 @@ Pinout
 // ----------------------------------------------------------------------------
 #include "Arduino.h"
 #include "BluetoothSerial.h"
+#include <WiFi.h>
+#include <WebServer.h>
 #include "Head.h"
 #include "Motion.h"
+#include "ControlArbiter.h"
+#include "WebControl.h"
 #include <ESP32Servo.h>
 
 
@@ -112,8 +116,16 @@ static QueueHandle_t queueHC = NULL;
 //static volatile SemaphoreHandle_t mutex_v  = NULL;
 
 BluetoothSerial SerialBT;
+WebServer webServer(80);
+HybridControl::Arbiter controlArbiter;
 
 Head *head;
+
+static void enqueueCommand(uint8_t value, uint32_t &sequence)
+{
+  DRPacket packet = {value, millis(), ++sequence};
+  xQueueOverwrite(queueSC, &packet);
+}
 
 // Setup
 // This function will only be run once after STAMP-PICO is started or reset .
@@ -139,6 +151,16 @@ void setup()
     SerialBT.begin("RobotUA");           // Bluetooth device name
     delay(1000); 
     Serial.println("Bluetooth Ok");
+
+    // Rede local independente de internet para Safari/iPhone e outros navegadores.
+    WiFi.mode(WIFI_AP);
+    WiFi.setSleep(false);
+    if (WiFi.softAP("RobotUA-Controle", "controle123")) {
+      Serial.print("Controle web: http://");
+      Serial.println(WiFi.softAPIP());
+    } else {
+      Serial.println("ERRO: nao foi possivel iniciar o Wi-Fi do controle.");
+    }
     
     // Initialize Head
     head = new Head();       
@@ -236,9 +258,44 @@ void DataSender( void* pvParameters )
 void DataReceiver( void* pvParameters )
 {
   uint32_t sequence = 0;
+#ifndef ROBOT_HOST_TEST
+  webServer.on("/", HTTP_GET, []() {
+    webServer.send_P(200, "text/html; charset=utf-8", CONTROL_PAGE);
+  });
+  webServer.on("/api/status", HTTP_GET, []() {
+    String json = String("{\"owner\":\"") + controlArbiter.ownerName(millis()) +
+      "\",\"ip\":\"" + WiFi.softAPIP().toString() + "\"}";
+    webServer.send(200, "application/json", json);
+  });
+  webServer.on("/api/command", HTTP_ANY, [&sequence]() {
+    if (!webServer.hasArg("v")) {
+      webServer.send(400, "application/json", "{\"error\":\"comando ausente\"}");
+      return;
+    }
+    long parsed = webServer.arg("v").toInt();
+    if (parsed < 0 || parsed > 255 || (parsed & 3) != 0) {
+      webServer.send(400, "application/json", "{\"error\":\"comando invalido\"}");
+      return;
+    }
+    uint32_t now = millis();
+    if (!controlArbiter.accept(HybridControl::Source::WEB, static_cast<uint8_t>(parsed), now)) {
+      String json = String("{\"accepted\":false,\"owner\":\"") +
+        controlArbiter.ownerName(now) + "\"}";
+      webServer.send(409, "application/json", json);
+      return;
+    }
+    enqueueCommand(static_cast<uint8_t>(parsed), sequence);
+    webServer.send(200, "application/json", "{\"accepted\":true,\"owner\":\"web\"}");
+  });
+  webServer.onNotFound([]() { webServer.send(404, "text/plain", "Nao encontrado"); });
+  webServer.begin();
+#endif
   TickType_t wake = xTaskGetTickCount();
   const TickType_t period = pdMS_TO_TICKS(1) ? pdMS_TO_TICKS(1) : 1;
   for (;;) {
+#ifndef ROBOT_HOST_TEST
+    webServer.handleClient();
+#endif
     DRPacket latest;
     bool received = false;
     // Consome o lote já disponível, sem esperar novos bytes nem processar
@@ -248,6 +305,10 @@ void DataReceiver( void* pvParameters )
       int value = SerialBT.read();
       if (value < 0) break;
       if ((value & 3) != 0) continue;
+#ifndef ROBOT_HOST_TEST
+      if (!controlArbiter.accept(HybridControl::Source::BLUETOOTH,
+          static_cast<uint8_t>(value), millis())) continue;
+#endif
       latest.val = static_cast<uint8_t>(value);
       latest.receivedMs = millis();
       latest.sequence = ++sequence;
@@ -258,6 +319,10 @@ void DataReceiver( void* pvParameters )
       int value = Serial.read();
       if (value < 0) break;
       if ((value & 3) != 0) continue;
+#ifndef ROBOT_HOST_TEST
+      if (!controlArbiter.accept(HybridControl::Source::USB_SERIAL,
+          static_cast<uint8_t>(value), millis())) continue;
+#endif
       latest.val = static_cast<uint8_t>(value);
       latest.receivedMs = millis();
       latest.sequence = ++sequence;

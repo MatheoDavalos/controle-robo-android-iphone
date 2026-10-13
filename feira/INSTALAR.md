@@ -1,26 +1,22 @@
-# Controle o robô
+# Controle o robô — Android e iPhone
 
-**Android 8.0 ou superior • Bluetooth • Não disponível para iPhone**
+## Android / Bluetooth
 
-## Baixar
+Leia `qr-android.png` usando internet para baixar o APK. Instale, pareie **RobotUA** e conecte no aplicativo **Controle_Robo**. Requer Android 8.0 ou superior.
 
-[Baixar Controle_Robo.apk](https://github.com/MatheoDavalos/controle-robo/releases/latest/download/Controle_Robo.apk)
+## iPhone / Wi-Fi
 
-1. Baixe e abra o APK no celular Android.
-2. Se solicitado, permita que o navegador instale esse aplicativo. O Android pode apresentar etapas adicionais de verificação.
-3. Ligue o Bluetooth e pareie com **RobotUA** nas configurações do celular.
-4. Abra **Controle_Robo**, permita o acesso ao Bluetooth e conecte ao robô.
-5. Use o controle esquerdo para frente/trás e o direito para direção. Solte os dois para parar.
+1. Leia `qr-wifi.png` para conectar à rede **RobotUA-Controle** (senha **controle123**).
+2. Depois leia `qr-controle-hibrido.png` para abrir **http://192.168.4.1** no Safari.
 
-Na feira, combine a vez com o responsável: **um celular controla o robô por vez**. Desconecte ao terminar.
+O aviso de rede sem internet é esperado. O controle fica no próprio ESP32. Não é possível abrir o controle pela internet, fora dessa rede. Android também pode usar o navegador.
 
-## Material para o estande
+## Arquivos para o estande
 
-- `cartaz-feira.png`: cartaz pronto para imprimir em A4 (retrato, ajustar à página).
-- `qr-controle-robo.png`: QR separado para usar em outros materiais.
-- `qr-controle-robo.svg`: QR vetorial para impressão.
+- `cartaz-feira.png`: imprimir em A4 retrato, ajustar à página.
+- `qr-android.png` e `.svg`: download do APK no repositório híbrido.
+- `qr-wifi.png` e `.svg`: conexão à rede Wi-Fi do robô.
+- `qr-controle-hibrido.png` e `.svg`: controle local no navegador.
+- `qr-repositorio.png` e `.svg`: instruções e código no GitHub.
 
-O QR aponta para https://github.com/MatheoDavalos/controle-robo/releases/latest.
-A página contém o download e as instruções, sem exigir conta GitHub.
-
-Antes da feira, faça uma leitura do cartaz impresso e teste a instalação em outro celular. Mantenha também um celular com o app instalado para quem quiser experimentar sem instalar.
+Um operador por vez. Desconecte ao terminar. Teste os códigos impressos com o robô antes da feira.

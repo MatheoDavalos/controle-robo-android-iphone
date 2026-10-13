@@ -1,73 +1,53 @@
-# Controle Robô
+# Controle Híbrido — Android e iPhone
 
-Aplicativo Android e firmware ESP32 para controlar um robô com duas rodas,
-expressões em matrizes de LEDs e aceleração/frenagem graduais.
+Controle do robô ESP32 por **Bluetooth no Android** ou **Wi-Fi no navegador do iPhone**.
 
-Este repositório contém somente a versão final aprovada no projeto.
+## Android: baixar o aplicativo
 
-## Instalar o aplicativo
+[**Baixar Controle_Robo.apk**](https://github.com/MatheoDavalos/controle-hibrido/raw/refs/heads/main/apk/Controle_Robo.apk)
 
-Baixe [Controle_Robo.apk](https://github.com/MatheoDavalos/controle-robo/releases/latest/download/Controle_Robo.apk) no celular Android.
-O APK requer **Android 8.0 ou superior** e Bluetooth. Não é compatível com iPhone.
+Requer Android 8.0 ou superior. Baixe usando internet, abra o APK e permita a instalação pela fonte escolhida se solicitado. Pareie **RobotUA** nas configurações Bluetooth, abra **Controle_Robo** e conecte. O aplicativo é o mesmo da versão normal, com a assinatura original preservada; o modo Wi-Fi está no firmware do robô.
 
-1. Abra o APK baixado e autorize a instalação por essa fonte, se o Android solicitar.
-2. Ligue o robô e pareie o dispositivo **RobotUA** nas configurações Bluetooth.
-3. Abra **Controle_Robo**, permita o acesso ao Bluetooth e conecte ao robô.
-4. Use o controle esquerdo para frente/trás e o direito para direção.
-5. Soltar movimento inicia a frenagem das duas rodas. Soltar apenas direção,
-   mantendo movimento pressionado, volta a andar reto.
+![Baixar APK Android](feira/qr-android.png)
 
-O arquivo distribuído é o APK debug usado na validação, assinado com a chave de
-desenvolvimento original. A chave não está neste repositório. Uma compilação em
-outra máquina pode ter assinatura diferente e exigir desinstalar a anterior.
-O checksum está em [apk/SHA256SUMS](apk/SHA256SUMS).
+## iPhone: controlar pelo Wi-Fi
 
-## QR code para a feira
+Não precisa instalar aplicativo. O robô precisa estar ligado e com o firmware híbrido carregado.
 
-O [cartaz pronto para imprimir](feira/cartaz-feira.png) inclui um QR code que abre
-a [página de download](https://github.com/MatheoDavalos/controle-robo/releases/latest).
-Veja [as instruções e os arquivos do QR](feira/INSTALAR.md).
+1. Leia o QR de Wi-Fi abaixo ou entre em **Ajustes > Wi-Fi > RobotUA-Controle**. Senha: **controle123**.
+2. Permaneça conectado mesmo que o iPhone indique que a rede não tem internet.
+3. Abra **http://192.168.4.1** no Safari, ou leia o QR de controle.
+4. Opcional: **Compartilhar > Adicionar à Tela de Início**.
 
-## Estrutura
+| 1 — Entrar no Wi-Fi | 2 — Abrir o controle |
+|---|---|
+| ![Conectar ao Wi-Fi](feira/qr-wifi.png) | ![Abrir controle](feira/qr-controle-hibrido.png) |
 
-```text
-android/                       Projeto Android Studio, somente variante final
-firmware/HeadController/        Sketch ESP32 e controle dos motores/face
-firmware/libraries/LedController/ Biblioteca fornecida no projeto original
-firmware/tests/                 Testes C++ e simulação das tarefas do firmware
-apk/                           APK final e checksum
-docs/                         Instalação, hardware, protocolo e validação
-```
+O endereço do controle só funciona conectado ao Wi-Fi do robô. A página está no ESP32 e não depende do GitHub ou da internet. Android também pode usar esse modo pelo navegador.
 
-## Compilar
+## Na feira
 
-- **App:** abra `android/` no Android Studio, configure o Android SDK e use JDK 17
-  ou 21. Selecione `controleRoboDebug`.
-- **Robô:** abra `firmware/HeadController/HeadController.ino` no Arduino IDE,
-  selecione **DOIT ESP32 DEVKIT V1** e a porta correta. Instale ESP32Servo e
-  disponibilize LedController conforme [docs/COMPILAR.md](docs/COMPILAR.md).
+[Cartaz para impressão A4](feira/cartaz-feira.png) · [Instruções](feira/INSTALAR.md)
 
-Os quatro arquivos `.ino`, `.cpp` e `.h` do sketch devem ficar juntos.
-A identificação da versão final na serial é `elapsed-ramp-v3`.
+Combine a vez com o responsável: um celular opera por vez. Solte os controles e desconecte ao terminar. O APK e o navegador usam o mesmo protocolo de movimento.
 
-## Testar
+## Código e montagem
 
-```bash
-bash firmware/tests/run.sh
-cd android
-./gradlew testControleRoboDebugUnitTest assembleControleRoboDebug lintControleRoboDebug
-```
+- `android/`: código do aplicativo Android.
+- `apk/`: aplicativo e checksum SHA-256.
+- `firmware/HeadController/`: sketch híbrido completo, incluindo a página web.
+- `firmware/libraries/`: biblioteca de LEDs do projeto original.
+- `feira/`: cartaz e QR Codes em PNG/SVG.
+- `docs/`: compilação, hardware e validação.
 
-A organização do repositório preserva os fontes finais do app e firmware. Não
-inclui variantes antigas, APKs anteriores, binários antigos do ESP32, caches,
-configurações pessoais, chaves de assinatura nem histórico de desenvolvimento.
+Abra **firmware/HeadController/HeadController.ino** no Arduino IDE mantendo todos os arquivos dessa pasta juntos. Para ESP32-WROOM-32 de 4 MB, selecione **ESP32 Dev Module**, **Flash Size: 4MB**, **Partition Scheme: Huge APP (3MB No OTA/1MB SPIFFS)** e **Flash Mode: DIO**. A configuração DOIT padrão de 1,31 MB não comporta o firmware híbrido. Consulte [compilação](docs/COMPILAR.md).
 
-Consulte [hardware e protocolo](docs/HARDWARE.md), [compilação](docs/COMPILAR.md)
-e [validação](docs/VALIDACAO.md).
+## Estado da versão híbrida
+
+Os testes de lógica passaram, mas a validação física conjunta de Bluetooth/Wi-Fi ainda está pendente. O usuário confirmou que os dois olhos funcionam após desligar e ligar o robô; a causa da falha inicial não foi confirmada. O histórico de validação herdado da versão normal não certifica o firmware híbrido.
+
+A arbitragem atual separa Bluetooth, web e serial, mas não distingue dois navegadores. O timeout físico é de 800 ms; a concessão de controle expira em 600 ms. O transporte web implementado usa HTTP, não WebSocket. Use apenas um operador por vez.
 
 ## Créditos
 
-O controlador de cabeça deriva do trabalho de Luciano Neris, com autoria
-preservada nos arquivos. A lógica de rampa integra contribuições do projeto e
-a revisão final de temporização. A biblioteca LedController mantém sua licença
-e créditos próprios. Veja [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Derivado do [controle normal](https://github.com/MatheoDavalos/controle-robo). Autoria de Luciano Neris e créditos do projeto preservados nos fontes. Veja [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

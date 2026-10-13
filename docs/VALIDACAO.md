@@ -27,3 +27,6 @@ saída estiver cheia, para não bloquear o controle.
 Se 00 chega tarde, investigue o caminho de recepção. Se os pulsos chegam ao neutro
 mas a roda continua, confira calibração, alimentação e servo. O modelo dos servos
 não foi informado.
+# Nota da versão híbrida
+
+O histórico abaixo pertence à versão normal. Para o híbrido, foram executados os testes locais de movimento, face, recepção e arbitragem e verificado o checksum do APK preservado. A interface web foi inspecionada no navegador de computador; isso não certifica Safari real nem operação simultânea no ESP32. O firmware excedeu a partição DOIT padrão: use ESP32 Dev Module com Huge APP conforme COMPILAR.md. O usuário confirmou que o olho apagado voltou a funcionar após desligar e ligar. Ainda é necessário validar os dois transportes no hardware.

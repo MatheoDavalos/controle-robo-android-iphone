@@ -162,6 +162,6 @@ with tempfile.TemporaryDirectory() as directory:
     cpp.write_text(source)
     exe = Path(directory) / 'test'
     subprocess.run(['g++', '-std=c++11', '-Wall', '-Wextra', '-Werror',
-                    '-Wno-unused-parameter', '-DROBOT_TRACE=1', '-fsanitize=undefined',
+                    '-Wno-unused-parameter', '-DROBOT_TRACE=1', '-DROBOT_HOST_TEST=1', '-fsanitize=undefined',
                     '-I', str(root / 'HeadController'), str(cpp), '-o', str(exe)], check=True)
     subprocess.run([str(exe)], check=True)

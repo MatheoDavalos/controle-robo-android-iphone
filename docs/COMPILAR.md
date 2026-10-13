@@ -1,39 +1,34 @@
-# Compilação
+# Compilar o Controle Híbrido
+
+## ESP32-WROOM-32 / DOIT DEVKIT V1 (4 MB)
+
+1. Instale o pacote ESP32 da Espressif e a biblioteca ESP32Servo no Arduino IDE.
+2. Disponibilize `firmware/libraries/LedController` em `libraries` do Sketchbook.
+3. Abra `firmware/HeadController/HeadController.ino`, mantendo Head.cpp, Head.h, Motion.h, ControlArbiter.h e WebControl.h na mesma pasta.
+4. Selecione **ESP32 Dev Module** no menu de placas ESP32 Arduino.
+5. Selecione **Flash Size: 4MB (32Mb)**, **Partition Scheme: Huge APP (3MB No OTA/1MB SPIFFS)** e **Flash Mode: DIO**.
+6. Escolha a porta correta, verifique e carregue por USB.
+7. Abra o Monitor Serial em **115200 baud**. Deve aparecer `Controle web: http://192.168.4.1`.
+
+O perfil DOIT padrão reserva apenas 1.310.720 bytes para o programa; o firmware híbrido compilado pelo usuário ocupou 1.674.851 bytes. Huge APP reserva 3.145.728 bytes. Essa configuração não oferece atualização OTA. Não há binário ESP32 pré-compilado nesta entrega.
 
 ## Android
 
-Requisitos: JDK 17 ou 21, Android SDK 34 e acesso às dependências Gradle na primeira
-compilação. Abra a pasta `android` no Android Studio e deixe a IDE configurar o
-SDK; `local.properties` é local e não deve ser versionado.
+O APK existente foi preservado e não requer recompilação para Bluetooth. Código em `android/`; JDK 17 ou 21 e Android SDK 34.
 
 ```bash
 cd android
-./gradlew testControleRoboDebugUnitTest assembleControleRoboDebug lintControleRoboDebug
+./gradlew testControleRoboDebugUnitTest assembleControleRoboDebug
 ```
 
-O APK gerado fica em `app/build/outputs/apk/controleRobo/debug/` dentro de android.
-A única variante de produto é `controleRobo`. O identificador instalado continua
-`br.edu.robotcontroller.finalapp`; nome Controle_Robo, versão Android 1.5 (código 8).
-O APK em `apk/` preserva o artefato final usado neste projeto. Reconstruir pode
-produzir hash e assinatura diferentes. Nenhuma chave privada é distribuída.
+O aplicativo continua chamado Controle_Robo, versão 1.5. A assinatura do APK distribuído é a original de desenvolvimento; compilar em outro ambiente pode mudar a assinatura.
 
-## ESP32
+## Testes locais
 
-1. Instale o suporte ESP32 da Espressif no Arduino IDE.
-2. Instale ESP32Servo pelo gerenciador de bibliotecas.
-3. Copie `firmware/libraries/LedController` para a pasta `libraries` do seu
-   Sketchbook Arduino. A biblioteca fornecida é LedController 2.0.2.
-4. Abra `firmware/HeadController/HeadController.ino`.
-5. Selecione DOIT ESP32 DEVKIT V1 e a porta serial. Compile e carregue.
-6. Abra o Monitor Serial em 115200 baud. O boot deve identificar
-   `RobotControl elapsed-ramp-v3 (200 accel / 400 brake deg/s)`.
+```bash
+bash firmware/tests/run.sh
+cd apk
+sha256sum -c SHA256SUMS
+```
 
-Head.cpp, Head.h e Motion.h são compilados automaticamente junto com o sketch.
-Não há um binário ESP32 pré-compilado nesta entrega. A identificação dos servos
-não foi informada; os pontos de calibração existentes foram preservados.
-
-## Testes sem o robô
-
-Na raiz, execute `bash firmware/tests/run.sh`. Requer Python 3 e g++ com suporte
-C++11. Os testes de lógica e as tarefas simuladas não substituem a compilação
-para ESP32 nem a avaliação dos motores físicos.
+Os testes locais não substituem a validação na placa. Os dois olhos voltaram a funcionar após desligar e ligar, conforme confirmação do usuário.
