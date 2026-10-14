@@ -2,7 +2,6 @@
 /*
 ******************************************************************************************
   Head Controller
-  Autor:       Luciano Neris
   Version:     V 0.1 
   Date:        24/02/2023  
   Processor:   ESP32 DEVKIT DOIT board (ESP32-WROOM-32 - Dual Core 4 MB flash 40 MHz crystal)

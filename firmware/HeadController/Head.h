@@ -1,6 +1,6 @@
 /*
 ******************************************************************************************
-  Head   Autor:       Luciano Neris
+  Head
   Version:     V 0.1 
   Processor:   
   Description: This class is intend to 

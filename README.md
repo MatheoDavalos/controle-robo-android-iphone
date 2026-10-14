@@ -1,50 +1,95 @@
-# Controle do Robô
+# Robô Universidade Aberta UFSCar
 
-Projeto de controle de um robô com duas rodas e expressões em matrizes de LEDs, baseado no ESP32-WROOM-32. Integra aplicativo móvel, interface web hospedada no próprio ESP32 e firmware para os motores e a face.
+Projeto de um robô móvel com duas rodas e expressões faciais em matrizes de LEDs, baseado no ESP32-WROOM-32. O repositório reúne o firmware embarcado, o aplicativo móvel, a interface web e a documentação de montagem e validação.
 
-## Funcionalidades
+O funcionamento integra **comunicação → comandos de movimento → aceleração e frenagem → expressões da face**. Os canais Bluetooth e Wi-Fi utilizam o mesmo protocolo de um byte.
 
-- Comunicação por Bluetooth Classic/SPP e Wi-Fi local.
-- Controle de movimento e direção com dois joysticks.
-- Protocolo de comandos de um byte, compartilhado pelos canais de comunicação.
-- Aceleração e frenagem graduais dos servos.
-- Expressões da face associadas ao movimento.
-- Arbitragem entre canais e parada por ausência de comandos.
+## Estrutura do repositório
 
-## Estrutura
+```text
+robo-universidade-aberta-ufscar/
+  README.md
+  THIRD_PARTY_NOTICES.md        # Componentes e licenças de terceiros
+  android/                     # Código-fonte do aplicativo móvel
+  apk/                         # Aplicativo compilado e checksum SHA-256
+  firmware/
+    HeadController/
+      HeadController.ino       # Inicialização, comunicação e tarefas
+      Motion.h                 # Movimento, rampa e timeout
+      ControlArbiter.h         # Arbitragem entre canais
+      WebControl.h             # Interface web hospedada no ESP32
+      Head.h / Head.cpp        # Matrizes e expressões da face
+    libraries/LedController/   # Biblioteca das matrizes MAX7219
+    tests/                     # Testes C++ e simulação das tarefas
+  docs/                        # Hardware, compilação e validação
+  feira/                       # Instruções de uso, cartaz e QR Codes
+```
 
-- `android/`: código-fonte do aplicativo móvel.
-- `apk/`: aplicativo compilado e checksum SHA-256.
-- `firmware/HeadController/`: firmware dos motores, face e interface web.
-- `firmware/libraries/`: biblioteca de controle das matrizes de LEDs.
-- `firmware/tests/`: testes de lógica e simulação das tarefas do firmware.
-- `docs/`: documentação de compilação, hardware e validação.
-- `feira/`: materiais de divulgação e instruções de uso.
+A execução embarcada começa em [`HeadController.ino`](firmware/HeadController/HeadController.ino). Movimento, face, arbitragem e interface web ficam em arquivos separados na mesma pasta do sketch.
 
-## Hardware e compilação
+## Preparação e execução
 
-O projeto utiliza ESP32-WROOM-32 de 4 MB, dois servos de rotação contínua e quatro matrizes de LEDs 8×8 com MAX7219.
+O hardware utiliza um ESP32-WROOM-32 de 4 MB, dois servos de rotação contínua e quatro matrizes de LEDs 8×8 com MAX7219. As conexões e o protocolo estão em [hardware e protocolo](docs/HARDWARE.md).
 
-Abra `firmware/HeadController/HeadController.ino` no Arduino IDE, mantendo todos os arquivos dessa pasta juntos. Selecione **ESP32 Dev Module**, **Flash Size: 4MB**, **Partition Scheme: Huge APP (3MB No OTA/1MB SPIFFS)** e **Flash Mode: DIO**. A partição padrão do perfil DOIT não comporta o firmware com Bluetooth e Wi-Fi.
+1. Instale o suporte ESP32 da Espressif e a biblioteca ESP32Servo no Arduino IDE.
+2. Disponibilize `firmware/libraries/LedController` na pasta de bibliotecas do Sketchbook.
+3. Abra `firmware/HeadController/HeadController.ino`, mantendo os arquivos da pasta juntos.
+4. Selecione **ESP32 Dev Module**, **Flash Size: 4MB**, **Partition Scheme: Huge APP (3MB No OTA/1MB SPIFFS)** e **Flash Mode: DIO**.
+5. Escolha a porta da placa, compile e carregue por USB. O Monitor Serial utiliza **115200 baud**.
 
-Consulte [compilação](docs/COMPILAR.md) e [hardware e protocolo](docs/HARDWARE.md) para dependências, conexões e detalhes técnicos.
+A partição padrão do perfil DOIT reserva aproximadamente 1,31 MB e não comporta o programa com Bluetooth e Wi-Fi. Huge APP reserva 3 MB e não oferece atualização OTA.
 
-## Comunicação
+O aplicativo móvel está em `android/` e utiliza JDK 17 ou 21 e Android SDK 34. Para compilação:
 
-O protocolo codifica o sentido e a velocidade de cada roda em um byte. Bluetooth e interface web encaminham os comandos ao mesmo controlador de movimento. A interface web usa HTTP e é servida pelo ESP32, sem dependência de internet.
+```bash
+cd android
+./gradlew testControleRoboDebugUnitTest assembleControleRoboDebug
+```
 
-A arbitragem distingue os canais Bluetooth, web e serial, mas não diferencia navegadores individuais. A concessão de controle expira após 600 ms sem comandos do canal ativo; o timeout dos motores é de 800 ms. A operação deve ser feita por um controlador de cada vez.
+Dependências e procedimentos completos estão em [compilação](docs/COMPILAR.md).
 
-## Testes e validação
+## Funcionamento e configuração
 
-Execute os testes locais do firmware:
+1. Bluetooth Classic/SPP, interface web ou serial recebem os comandos.
+2. A arbitragem seleciona o canal de controle ativo.
+3. O controlador de movimento interpreta sentido e velocidade de cada roda e aplica as rampas de aceleração e frenagem.
+4. O estado de movimento seleciona a expressão exibida nas matrizes.
+
+A interface web usa HTTP e fica armazenada no ESP32, sem dependência de internet. Os dois joysticks representam movimento e direção; direção sozinha não movimenta o robô.
+
+| Componente | Configuração atual |
+|---|---|
+| Protocolo | Um byte com sentido e velocidade de cada roda |
+| Concessão do canal | Expira após 600 ms sem comandos do canal ativo |
+| Timeout dos motores | Neutro após 800 ms sem comandos aceitos |
+| Aceleração | 200 graus/s no comando dos servos |
+| Frenagem | 400 graus/s no comando dos servos |
+| Face | Dois olhos e duas matrizes para a boca |
+
+As taxas dos servos são parâmetros de comando, não medições de velocidade física do robô. A configuração está nos arquivos `Motion.h`, `ControlArbiter.h` e `HeadController.ino`.
+
+## Testes e limites da validação
+
+Na raiz do repositório:
 
 ```bash
 bash firmware/tests/run.sh
+cd apk
+sha256sum -c SHA256SUMS
 ```
 
-Os testes cobrem movimento, rampa, timeout, expressões da face, recepção e arbitragem. A validação física conjunta de Bluetooth e Wi-Fi permanece pendente. Consulte [validação](docs/VALIDACAO.md) para o histórico e os limites dos testes.
+Os testes locais verificam transições de movimento, rampas, timeout, expressões da face, recepção e arbitragem. Eles não substituem a compilação para ESP32 nem a avaliação dos motores na montagem real.
 
-## Créditos
+- A validação física conjunta de Bluetooth e Wi-Fi permanece pendente.
+- A arbitragem distingue canais, mas não diferencia dois navegadores; a operação deve ser feita por um controlador de cada vez.
+- A interface foi inspecionada no navegador de computador; isso não certifica todos os navegadores móveis.
+- O histórico da versão anterior está separado em [validação](docs/VALIDACAO.md).
 
-Derivado do [controle original](https://github.com/MatheoDavalos/controle-robo). Autoria de Luciano Neris e créditos do projeto preservados nos fontes. Veja [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+## Colaboradores
+
+- [@carolinaasantos](https://github.com/carolinaasantos)
+- [@ncr1701](https://github.com/ncr1701)
+
+## Componentes de terceiros
+
+As bibliotecas e ferramentas distribuídas mantêm suas próprias licenças. Consulte [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) e os avisos incluídos nos componentes. Não há uma licença geral definida para o conjunto do projeto.
