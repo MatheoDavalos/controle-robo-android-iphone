@@ -10,3 +10,6 @@ __pycache__/
 *.pyc
 core
 .DS_Store
+
+# Materiais de divulgação mantidos somente no computador
+/feira/

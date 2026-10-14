@@ -22,7 +22,6 @@ robo-universidade-aberta-ufscar/
     libraries/LedController/   # Biblioteca das matrizes MAX7219
     tests/                     # Testes C++ e simulação das tarefas
   docs/                        # Hardware, compilação e validação
-  feira/                       # Instruções de uso, cartaz e QR Codes
 ```
 
 A execução embarcada começa em [`HeadController.ino`](firmware/HeadController/HeadController.ino). Movimento, face, arbitragem e interface web ficam em arquivos separados na mesma pasta do sketch.
@@ -84,3 +83,14 @@ Os testes locais verificam transições de movimento, rampas, timeout, expressõ
 - A arbitragem distingue canais, mas não diferencia dois navegadores; a operação deve ser feita por um controlador de cada vez.
 - A interface foi inspecionada no navegador de computador; isso não certifica todos os navegadores móveis.
 - O histórico da versão anterior está separado em [validação](docs/VALIDACAO.md).
+
+## Referências e dependências
+
+- [LedController](https://github.com/noah1510/LedController): controle das matrizes MAX7219; versão 2.0.2 incluída em `firmware/libraries/LedController`, sob LGPLv3.
+- [ESP32Servo](https://github.com/madhephaestus/ESP32Servo): geração dos sinais PWM dos servos; instalada separadamente no Arduino IDE.
+- [Arduino-ESP32 — Espressif](https://github.com/espressif/arduino-esp32): plataforma do firmware e bibliotecas `BluetoothSerial`, `WiFi` e `WebServer`.
+- [Kotlin](https://kotlinlang.org/) e [Android SDK](https://developer.android.com/): linguagem e plataforma do aplicativo móvel.
+- [Gradle](https://gradle.org/): compilação do aplicativo pelo wrapper incluído no projeto.
+- [JUnit 4](https://github.com/junit-team/junit4): testes unitários do aplicativo, versão 4.13.2.
+
+Os componentes de terceiros mantêm suas respectivas licenças e avisos. Consulte [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
